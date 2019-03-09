@@ -94,6 +94,11 @@ type ConfigState struct {
 	// reflect.Value.String() output which guarantees display stability.
 	SortKeys bool
 
+	//SortLines will sort all lines as strings. When printing an Array
+	// it will render each line into a string, order the list of strings and printer in that order.
+	// same for a map, where each key:value is a line.
+	SortLines bool
+
 	// SpewKeys specifies that, as a last resort attempt, map keys should
 	// be spewed to strings and sorted by those strings.  This is only
 	// considered if SortKeys is true.

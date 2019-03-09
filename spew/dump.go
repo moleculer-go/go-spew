@@ -24,6 +24,7 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -156,6 +157,38 @@ func (d *dumpState) dumpPtr(v reflect.Value) {
 	d.w.Write(closeParenBytes)
 }
 
+type StringLineWriter struct {
+	byteStore *ByteStore
+}
+
+type ByteStore struct {
+	buffer []byte
+}
+
+func LineWriter() StringLineWriter {
+	byteStore := ByteStore{}
+	writer := StringLineWriter{&byteStore}
+	return writer
+}
+
+func (writer StringLineWriter) Write(p []byte) (n int, err error) {
+	arr := writer.byteStore.Bytes()
+	arr = append(arr, p...)
+	writer.byteStore.setBytes(arr)
+	return len(p), nil
+}
+func (writer *StringLineWriter) String() string {
+	return string(writer.byteStore.buffer)
+}
+
+func (store *ByteStore) Bytes() []byte {
+	return store.buffer
+}
+
+func (store *ByteStore) setBytes(bytes []byte) {
+	store.buffer = bytes
+}
+
 // dumpSlice handles formatting of arrays and slices.  Byte (uint8 under
 // reflection) arrays and slices are dumped in hexdump -C fashion.
 func (d *dumpState) dumpSlice(v reflect.Value) {
@@ -233,9 +266,24 @@ func (d *dumpState) dumpSlice(v reflect.Value) {
 		return
 	}
 
+	lines := make([]string, numEntries)
+	prevWriter := d.w
 	// Recursively call dump for each item.
 	for i := 0; i < numEntries; i++ {
+		lineWriter := LineWriter()
+		d.w = lineWriter
 		d.dump(d.unpackValue(v.Index(i)))
+		lines[i] = lineWriter.String()
+	}
+	if d.cs.SortLines {
+		sort.Strings(lines)
+	}
+
+	d.w = prevWriter
+	//add commas
+	for i := 0; i < numEntries; i++ {
+		line := lines[i]
+		io.WriteString(d.w, line)
 		if i < (numEntries - 1) {
 			d.w.Write(commaNewlineBytes)
 		} else {
@@ -387,11 +435,29 @@ func (d *dumpState) dump(v reflect.Value) {
 			if d.cs.SortKeys {
 				sortValues(keys, d.cs)
 			}
+
+			lines := make([]string, numEntries)
+			prevWriter := d.w
 			for i, key := range keys {
+				lineWriter := LineWriter()
+				d.w = lineWriter
+
 				d.dump(d.unpackValue(key))
 				d.w.Write(colonSpaceBytes)
 				d.ignoreNextIndent = true
 				d.dump(d.unpackValue(v.MapIndex(key)))
+
+				lines[i] = lineWriter.String()
+			}
+			if d.cs.SortLines {
+				sort.Strings(lines)
+			}
+
+			d.w = prevWriter
+			//add commas
+			for i := 0; i < numEntries; i++ {
+				line := lines[i]
+				io.WriteString(d.w, line)
 				if i < (numEntries - 1) {
 					d.w.Write(commaNewlineBytes)
 				} else {
