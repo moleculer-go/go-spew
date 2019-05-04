@@ -23,7 +23,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/moleculer-go/go-spew/spew"
+	"github.com/moleculer-go/spew"
 )
 
 // spewFunc is used to identify which public function of the spew package or

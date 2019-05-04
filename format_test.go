@@ -72,7 +72,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/moleculer-go/go-spew/spew"
+	"github.com/moleculer-go/spew"
 )
 
 // formatterTest is used to describe a test to be performed against NewFormatter.

@@ -19,7 +19,7 @@ package spew_test
 import (
 	"fmt"
 
-	"github.com/moleculer-go/go-spew/spew"
+	"github.com/moleculer-go/spew"
 )
 
 type Flag int

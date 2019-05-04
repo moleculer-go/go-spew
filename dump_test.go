@@ -67,7 +67,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/moleculer-go/go-spew/spew"
+	"github.com/moleculer-go/spew"
 )
 
 // dumpTest is used to describe a test to be performed against the Dump method.

@@ -1,5 +1,5 @@
-module github.com/moleculer-go/go-spew/spew
+module github.com/moleculer-go/spew
 
 go 1.12
 
-require github.com/moleculer-go/go-spew v1.1.1 // indirect
+require github.com/moleculer-go/spew v1.1.2 // indirect

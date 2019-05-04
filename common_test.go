@@ -21,7 +21,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/moleculer-go/go-spew/spew"
+	"github.com/moleculer-go/spew"
 )
 
 // custom type to test Stinger interface on non-pointer receiver.
